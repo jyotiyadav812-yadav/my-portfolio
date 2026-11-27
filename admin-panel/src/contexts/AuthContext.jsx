@@ -1,13 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-
-const AuthContext = createContext(null);
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
-}
+import { AuthContext } from './authContext';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -15,35 +8,58 @@ export function AuthProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      if (session?.user) await checkAdmin();
-      setLoading(false);
-    };
-    init();
-
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) checkAdmin();
-      else setIsAdmin(false);
-      setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
   const checkAdmin = async () => {
     setAdminLoading(true);
     const { data, error } = await supabase.rpc('is_admin');
-    setIsAdmin(!!data && !error);
+    const allowed = !error && data === true;
+    setIsAdmin(allowed);
     setAdminLoading(false);
+    return allowed;
   };
+
+  useEffect(() => {
+    let active = true;
+
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!active) return;
+      const sessionUser = data?.session?.user ?? null;
+      setUser(sessionUser);
+      if (sessionUser) await checkAdmin();
+      if (active) setLoading(false);
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+      if (nextUser) {
+        setLoading(true);
+        checkAdmin().finally(() => setLoading(false));
+      } else {
+        setIsAdmin(false);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
 
   const login = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (!error && data.user) await checkAdmin();
-    return { data, error };
+    if (error || !data?.user) return { data: null, error };
+
+    const allowed = await checkAdmin();
+    if (!allowed) {
+      await supabase.auth.signOut();
+      setUser(null);
+      setIsAdmin(false);
+      return { data: null, error: { message: 'This account does not have admin access.' } };
+    }
+
+    return { data, error: null };
   };
 
   const logout = async () => {

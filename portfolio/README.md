@@ -9,10 +9,10 @@ Home, About, Skills, AI Tools, Projects, Education, Contact and FAQ (with a mess
 React, Tailwind CSS, Framer Motion, GSAP + ScrollTrigger (loaded from CDN, single `index.html` file).
 
 ## How to edit
-Open `index.html` and change the details inside the `D` object near the top of the script (email, phone, social links, about text, education, projects).
+Content is managed from the password-protected admin panel in `../admin-panel`. The page fetches it from Supabase through `cms.js` on load. The values in the `D` object at the top of `index.html` remain as offline fallbacks.
 
 ## Publish with GitHub Pages
-1. Upload `index.html` to a public GitHub repository.
+1. Upload `index.html` and `cms.js` to a public GitHub repository.
 2. Go to **Settings → Pages**, choose **Deploy from a branch**, select **main** and **/(root)**, then **Save**.
 3. Your site will be live at `https://<your-username>.github.io/<repository-name>/`.
 
