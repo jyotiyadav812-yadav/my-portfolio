@@ -1,6 +1,6 @@
 import { Save } from 'lucide-react';
-import { RowActions, SectionCard } from '../components/EditorParts';
 import Toast from '../components/Toast';
+import { RowActions } from '../components/EditorParts';
 import { useSiteContent } from '../hooks/useSiteContent';
 
 const KEY = 'faq';
@@ -28,45 +28,48 @@ export default function Faq() {
     update('items', items);
   };
 
-  if (loading) return <p className="text-sm text-muted">Loading content...</p>;
+  if (loading) return <p className="text-sm text-[#25243A]/50">Loading content...</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-text">FAQ</h2>
-        <p className="text-sm text-muted mt-1">Questions and answers shown in the FAQ accordion.</p>
+        <h2 className="text-3xl sm:text-4xl font-bold grad tracking-tight mb-2">FAQ</h2>
+        <p className="text-sm text-[#25243A]/60">Questions and answers shown in the FAQ accordion.</p>
       </div>
 
       <Toast toast={toast} onRemove={() => setToast(null)} />
-      {error && <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">{error}</div>}
+      {error && <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm shadow-sm">{error}</div>}
 
       <form
         onSubmit={async (e) => {
           e.preventDefault();
           await save();
         }}
-        className="space-y-6"
+        className="space-y-8"
       >
-        <SectionCard
-          title="FAQ items"
-          onAdd={() => update('items', [...form.items, { icon: '✦', question: '', answer: '' }])}
-        >
+        <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm relative overflow-hidden">
+          <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl bg-[#8B5CF6]/15" />
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#8B5CF6] mb-6 relative z-10">FAQ items</h3>
           {form.items.map((item, index) => (
-            <div key={index} className="space-y-3 p-4 rounded-xl border border-border bg-surface">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
-                <input
-                  placeholder="Icon"
-                  className="md:col-span-2 px-3 py-2.5 border border-border rounded-lg bg-white"
-                  value={item.icon ?? ''}
-                  onChange={(e) => updateItem(index, 'icon', e.target.value)}
-                />
-                <input
-                  placeholder="Question"
-                  className="md:col-span-8 px-3 py-2.5 border border-border rounded-lg bg-white"
-                  value={item.question ?? ''}
-                  onChange={(e) => updateItem(index, 'question', e.target.value)}
-                />
-                <div className="md:col-span-2 pt-1">
+            <div key={index} className="relative z-10 space-y-4 rounded-2xl border border-[#B69CFF]/30 bg-white/80 p-5">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                <div className="md:col-span-2 block">
+                  <label className="block text-xs font-medium text-[#25243A]/60 mb-2">Icon</label>
+                  <input
+                    className="w-full px-3 py-2.5 border border-[#B69CFF]/40 rounded-xl bg-white text-[#25243A] outline-none focus:border-[#8B5CF6]"
+                    value={item.icon ?? ''}
+                    onChange={(e) => updateItem(index, 'icon', e.target.value)}
+                  />
+                </div>
+                <div className="md:col-span-8 block">
+                  <label className="block text-xs font-medium text-[#25243A]/60 mb-2">Question</label>
+                  <input
+                    className="w-full px-3 py-2.5 border border-[#B69CFF]/40 rounded-xl bg-white text-[#25243A] outline-none focus:border-[#8B5CF6]"
+                    value={item.question ?? ''}
+                    onChange={(e) => updateItem(index, 'question', e.target.value)}
+                  />
+                </div>
+                <div className="md:col-span-2 flex items-end justify-end">
                   <RowActions
                     index={index}
                     length={form.items.length}
@@ -75,22 +78,31 @@ export default function Faq() {
                   />
                 </div>
               </div>
-              <textarea
-                rows={3}
-                placeholder="Answer"
-                className="w-full px-3 py-2.5 border border-border rounded-lg bg-white"
-                value={item.answer ?? ''}
-                onChange={(e) => updateItem(index, 'answer', e.target.value)}
-              />
+              <div className="relative z-10 block">
+                <label className="block text-xs font-medium text-[#25243A]/60 mb-2">Answer</label>
+                <textarea
+                  rows={3}
+                  className="w-full px-3 py-2.5 border border-[#B69CFF]/40 rounded-xl bg-white text-[#25243A] outline-none focus:border-[#8B5CF6]"
+                  value={item.answer ?? ''}
+                  onChange={(e) => updateItem(index, 'answer', e.target.value)}
+                />
+              </div>
             </div>
           ))}
-        </SectionCard>
+          <button
+            type="button"
+            onClick={() => update('items', [...form.items, { icon: '✦', question: '', answer: '' }])}
+            className="relative z-10 mt-6 flex items-center gap-2 px-4 py-2 rounded-xl border border-[#B69CFF]/40 text-xs font-medium text-[#8B5CF6] hover:bg-[#F3EDFF] transition-all"
+          >
+            <span className="text-[12px]">+</span> Add FAQ item
+          </button>
+        </div>
 
         <div className="flex justify-end">
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2.5 bg-lavender text-white rounded-lg font-medium disabled:opacity-60 hover:bg-lavender-hover flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#67DDF5] text-white rounded-2xl font-bold shadow-lg shadow-purple-300/50 hover:shadow-[0_0_34px_rgba(139,92,246,.55)] hover:-translate-y-0.5 transition-all disabled:opacity-60 flex items-center gap-2"
           >
             <Save size={18} /> {saving ? 'Saving...' : 'Save changes'}
           </button>

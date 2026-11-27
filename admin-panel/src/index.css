@@ -23,6 +23,8 @@
 
   body {
     font-family: var(--admin-font, var(--font-sans));
+    overflow-wrap: anywhere;
+    word-break: break-word;
     color: var(--color-text);
     background: var(--color-bg);
   }
@@ -122,5 +124,20 @@
   [aria-label^="Delete "] {
     border-radius: 0.5rem;
     transition: background 0.15s ease;
+  }
+
+  .grad {
+    background: linear-gradient(90deg, #8B5CF6, #67DDF5, #B69CFF, #8B5CF6);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gs 8s linear infinite;
+  }
+
+  @keyframes gs {
+    to {
+      background-position: 300% 0;
+    }
   }
 }

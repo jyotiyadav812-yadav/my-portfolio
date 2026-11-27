@@ -1,6 +1,5 @@
 import { Save, Trash2 } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
-import { SectionCard } from '../components/EditorParts';
 import Toast from '../components/Toast';
 import { useSiteContent } from '../hooks/useSiteContent';
 
@@ -34,13 +33,13 @@ export default function Site() {
     hero.setForm({ ...hero.form, tags });
   };
 
-  if (site.loading || hero.loading) return <p className="text-sm text-muted">Loading content...</p>;
+  if (site.loading || hero.loading) return <p className="text-sm text-[#25243A]/50">Loading content...</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-bold text-text">Site & Hero</h2>
-        <p className="text-sm text-muted mt-1">Browser title, hero headline, buttons, badges, and hero image.</p>
+        <h2 className="text-3xl sm:text-4xl font-bold grad tracking-tight mb-2">Site &amp; Hero</h2>
+        <p className="text-sm text-[#25243A]/60">Browser title, hero headline, buttons, badges, and hero image.</p>
       </div>
 
       <Toast toast={activeToast} onRemove={() => {
@@ -48,7 +47,7 @@ export default function Site() {
         hero.setToast(null);
       }} />
       {(site.error || hero.error) && (
-        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm shadow-sm">
           {site.error || hero.error}
         </div>
       )}
@@ -58,11 +57,12 @@ export default function Site() {
           e.preventDefault();
           await Promise.all([site.save(), hero.save()]);
         }}
-        className="space-y-6"
+        className="space-y-8"
       >
-        <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-5">
-          <h3 className="text-sm font-semibold text-text">Site settings</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm space-y-8 relative overflow-hidden">
+          <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl bg-[#8B5CF6]/15" />
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#8B5CF6] mb-6 relative z-10">Site settings</h3>
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field label="Site name" value={site.form.name ?? ''} onChange={(v) => site.setForm({ ...site.form, name: v })} />
             <Field label="Browser title" value={site.form.title ?? ''} onChange={(v) => site.setForm({ ...site.form, title: v })} />
           </div>
@@ -70,24 +70,25 @@ export default function Site() {
           <ImageUpload label="Site logo" value={site.form.logo_url} onChange={(v) => site.setForm({ ...site.form, logo_url: v })} />
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-5">
-          <h3 className="text-sm font-semibold text-text">Hero section</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm space-y-8 relative overflow-hidden">
+          <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl bg-[#67DDF5]/15" />
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#67DDF5] mb-6 relative z-10">Hero section</h3>
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field label="Top badge" value={hero.form.badge ?? ''} onChange={(v) => hero.setForm({ ...hero.form, badge: v })} />
             <Field label="Greeting" value={hero.form.greeting ?? ''} onChange={(v) => hero.setForm({ ...hero.form, greeting: v })} />
             <Field label="Name" value={hero.form.name ?? ''} onChange={(v) => hero.setForm({ ...hero.form, name: v })} />
             <Field label="Subtitle" value={hero.form.subtitle ?? ''} onChange={(v) => hero.setForm({ ...hero.form, subtitle: v })} />
           </div>
-          <label className="block">
-            <span className="block text-sm font-medium text-muted mb-1.5">Hero description</span>
+          <label className="relative z-10 block">
+            <span className="block text-sm font-medium text-[#25243A]/60 mb-2">Hero description</span>
             <textarea
-              rows={3}
-              className="w-full px-3 py-2.5 border border-border rounded-lg"
+              rows={4}
+              className="w-full px-4 py-3 border border-[#B69CFF]/40 rounded-2xl bg-white/80 text-[#25243A] outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/25 transition-all"
               value={hero.form.description ?? ''}
               onChange={(e) => hero.setForm({ ...hero.form, description: e.target.value })}
             />
           </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field label="Primary button text" value={hero.form.primary_text ?? ''} onChange={(v) => hero.setForm({ ...hero.form, primary_text: v })} />
             <Field label="Primary button link" value={hero.form.primary_link ?? ''} onChange={(v) => hero.setForm({ ...hero.form, primary_link: v })} />
             <Field label="Secondary button text" value={hero.form.secondary_text ?? ''} onChange={(v) => hero.setForm({ ...hero.form, secondary_text: v })} />
@@ -96,42 +97,46 @@ export default function Site() {
           <ImageUpload label="Hero image" value={hero.form.image_url} onChange={(v) => hero.setForm({ ...hero.form, image_url: v })} />
         </div>
 
-        <SectionCard
-          title="Hero tags"
-          onAdd={() => hero.setForm({ ...hero.form, tags: [...hero.form.tags, { label: '', color: '#8B5CF6' }] })}
-        >
-          {hero.form.tags.map((tag, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-              <input
-                placeholder="Tag label"
-                className="md:col-span-9 px-3 py-2.5 border border-border rounded-lg"
-                value={tag.label ?? ''}
-                onChange={(e) => updateHeroTag(index, 'label', e.target.value)}
-              />
-              <input
-                type="color"
-                aria-label="Tag color"
-                className="w-12 h-11 rounded cursor-pointer border border-border bg-white"
-                value={tag.color || '#8B5CF6'}
-                onChange={(e) => updateHeroTag(index, 'color', e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => hero.setForm({ ...hero.form, tags: hero.form.tags.filter((_, i) => i !== index) })}
-                className="p-2 text-red-600 hover:bg-red-50 rounded"
-                aria-label="Remove tag"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
-        </SectionCard>
+        <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm relative overflow-hidden">
+          <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl bg-[#B69CFF]/15" />
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#B69CFF] mb-6 relative z-10">Hero tags</h3>
+          <SectionCard
+            title="Hero tags"
+            onAdd={() => hero.setForm({ ...hero.form, tags: [...hero.form.tags, { label: '', color: '#8B5CF6' }] })}
+          >
+            {hero.form.tags.map((tag, index) => (
+              <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <input
+                  placeholder="Tag label"
+                  className="md:col-span-9 px-3 py-2.5 border border-[#B69CFF]/40 rounded-xl bg-white/80 text-[#25243A] outline-none focus:border-[#8B5CF6]"
+                  value={tag.label ?? ''}
+                  onChange={(e) => updateHeroTag(index, 'label', e.target.value)}
+                />
+                <input
+                  type="color"
+                  aria-label="Tag color"
+                  className="w-12 h-11 rounded-xl cursor-pointer border border-[#B69CFF]/40 bg-white/80"
+                  value={tag.color || '#8B5CF6'}
+                  onChange={(e) => updateHeroTag(index, 'color', e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => hero.setForm({ ...hero.form, tags: hero.form.tags.filter((_, i) => i !== index) })}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
+                  aria-label="Remove tag"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </SectionCard>
+        </div>
 
         <div className="flex justify-end">
           <button
             type="submit"
             disabled={site.saving || hero.saving}
-            className="px-5 py-2.5 bg-lavender text-white rounded-lg font-medium disabled:opacity-60 hover:bg-lavender-hover flex items-center gap-2"
+            className="px-6 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#67DDF5] text-white rounded-2xl font-bold shadow-lg shadow-purple-300/50 hover:shadow-[0_0_34px_rgba(139,92,246,.55)] hover:-translate-y-0.5 transition-all disabled:opacity-60 flex items-center gap-2"
           >
             <Save size={18} /> {site.saving || hero.saving ? 'Saving...' : 'Save changes'}
           </button>
@@ -144,12 +149,32 @@ export default function Site() {
 function Field({ label, value, onChange }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium text-muted mb-1.5">{label}</span>
+      <span className="block text-sm font-medium text-[#25243A]/60 mb-2">{label}</span>
       <input
-        className="w-full px-3 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-lavender"
+        className="w-full px-4 py-3 border border-[#B69CFF]/40 rounded-2xl bg-white/80 text-[#25243A] outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/25 transition-all"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
     </label>
+  );
+}
+
+function SectionCard({ title, children, onAdd }) {
+  return (
+    <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm mb-8">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-[#8B5CF6]">{title}</h3>
+        {onAdd && (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#B69CFF]/40 text-xs font-medium text-[#8B5CF6] hover:bg-[#F3EDFF] transition"
+          >
+            <span className="text-[12px]">+</span> Add
+          </button>
+        )}
+      </div>
+      {children}
+    </div>
   );
 }

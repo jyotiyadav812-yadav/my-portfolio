@@ -52,62 +52,64 @@ export default function Messages() {
     }
   };
 
-  if (loading) return <p className="text-sm text-muted">Loading messages...</p>;
+  if (loading) return <p className="text-sm text-[#25243A]/50">Loading messages...</p>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
-          <h2 className="text-xl font-bold text-text">Messages</h2>
-          <p className="text-sm text-muted mt-1">Contact form submissions from your portfolio.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold grad tracking-tight mb-2">Messages</h2>
+          <p className="text-sm text-[#25243A]/60">Contact form submissions from your portfolio.</p>
         </div>
-        <input
-          type="search"
-          placeholder="Search messages..."
-          className="px-3 py-2.5 border border-border rounded-lg w-full sm:w-64"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <div className="relative z-10 block">
+          <input
+            type="search"
+            placeholder="Search messages..."
+            className="px-4 py-3 border border-[#B69CFF]/40 rounded-2xl bg-white/80 text-[#25243A] outline-none focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/25 transition-all w-full sm:w-72"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
       </div>
 
       <Toast toast={toast} onRemove={() => setToast(null)} />
-      {error && <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">{error}</div>}
+      {error && <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm shadow-sm">{error}</div>}
 
-      <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="glass rounded-3xl p-8 border border-[#B69CFF]/30 shadow-sm relative overflow-hidden">
         {visible.length === 0 ? (
-          <div className="p-10 text-center text-muted flex flex-col items-center gap-2">
-            <Inbox size={28} />
+          <div className="p-12 text-center text-[#25243A]/50 flex flex-col items-center gap-3">
+            <Inbox size={32} className="mx-auto mb-3" />
             {messages.length === 0 ? 'No messages yet.' : 'No messages match your search.'}
           </div>
         ) : (
-          <ul className="divide-y divide-border">
+          <ul className="divide-y divide-[#B69CFF]/20">
             {visible.map((message) => (
-              <li key={message.id} className={`p-5 ${message.read ? '' : 'bg-[#F8FAFF]'}`}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
+              <li key={message.id} className={`p-6 ${message.read ? '' : 'bg-[#F8FAFF]/50 rounded-xl'} group`}>
+                <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-semibold text-text">{message.name}</p>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <p className="font-bold text-[#25243A]">{message.name}</p>
                       {!message.read && (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EDFF] text-lavender">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#F3EDFF] text-[#8B5CF6]">
                           New
                         </span>
                       )}
                     </div>
-                    <a href={`mailto:${message.email}`} className="text-xs text-lavender hover:underline">
+                    <a href={`mailto:${message.email}`} className="text-sm text-[#8B5CF6] hover:underline transition">
                       {message.email}
                     </a>
-                    <p className="text-xs text-muted mt-1">
+                    <p className="text-xs text-[#25243A]/50 mt-2 uppercase tracking-wider">
                       {new Date(message.created_at).toLocaleString()}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={() => toggleRead(message)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border transition ${
+                      className={`flex items-center gap-2 px-3 py-2 text-xs rounded-xl border transition ${
                         message.read
-                          ? 'border-border text-muted hover:text-text'
-                          : 'border-lavender text-lavender bg-[#F3EDFF]'
+                          ? 'border-[#B69CFF]/40 text-[#25243A]/60 hover:text-[#8B5CF6] hover:border-[#8B5CF6]'
+                          : 'border-[#8B5CF6] text-[#8B5CF6] bg-[#F3EDFF]'
                       }`}
                     >
                       <Check size={14} /> {message.read ? 'Read' : 'Mark read'}
@@ -115,14 +117,14 @@ export default function Messages() {
                     <button
                       type="button"
                       onClick={() => handleDelete(message.id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded"
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
                       aria-label="Delete message"
                     >
                       <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-text whitespace-pre-wrap mt-4">{message.message}</p>
+                <p className="text-sm text-[#25243A]/70 whitespace-pre-wrap mt-5 leading-relaxed">{message.message}</p>
               </li>
             ))}
           </ul>
