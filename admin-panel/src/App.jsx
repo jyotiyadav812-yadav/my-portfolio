@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { useAuth } from './contexts/authContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -17,6 +16,7 @@ import Faq from './pages/Faq';
 import Projects from './pages/Projects';
 import Messages from './pages/Messages';
 import Admins from './pages/Admins';
+import Account from './pages/Account';
 
 function ProtectedRoute({ children }) {
   const { user, loading, adminLoading, isAdmin } = useAuth();
@@ -40,7 +40,7 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
@@ -64,6 +64,7 @@ function App() {
             <Route path="admin/projects" element={<Projects />} />
             <Route path="admin/messages" element={<Messages />} />
             <Route path="admin/admins" element={<Admins />} />
+            <Route path="admin/account" element={<Account />} />
           </Route>
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>

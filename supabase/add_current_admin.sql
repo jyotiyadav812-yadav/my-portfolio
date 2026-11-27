@@ -1,7 +1,12 @@
 insert into public.admin_users (email)
 select email from auth.users
+where email is not null and email <> ''
 order by created_at desc
 limit 1
+on conflict (email) do nothing;
+
+insert into public.admin_users (email)
+values ('jyotiiyadav812@gmail.com')
 on conflict (email) do nothing;
 
 select email, (email_confirmed_at is not null) as confirmed

@@ -54,6 +54,7 @@ export default function Profile() {
         className="space-y-6"
       >
         <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-5">
+          <h3 className="text-sm font-semibold text-text">Profile details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-muted mb-1.5">Full name</label>

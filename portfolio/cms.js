@@ -1,6 +1,6 @@
 (function () {
-  const url = window.PORTFOLIO_SUPABASE_URL || 'https://solmqrqfvijsomtrzdet.supabase.co';
-  const key = window.PORTFOLIO_SUPABASE_KEY || 'sb_publishable_XBA2ZWfZkRa9sBzv21Tk3w_NEchAEIr';
+  const url = window.PORTFOLIO_SUPABASE_URL || 'https://ytifshsbiqtntgjshqpm.supabase.co';
+  const key = window.PORTFOLIO_SUPABASE_KEY || 'sb_publishable_G9RXhsTAqSDPOIs0Sbbe3g_THoGdzJc';
   const headers = { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
 
   window.portfolioSendMessage = async function (payload) {

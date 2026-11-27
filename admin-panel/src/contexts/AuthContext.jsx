@@ -1,72 +1,116 @@
-import { useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { AuthContext } from './authContext';
+
+export const AuthContext = createContext(null);
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(false);
+  const userRef = useRef(null);
+  const checkRef = useRef(null);
 
-  const checkAdmin = async () => {
+  const applyUser = useCallback((nextUser) => {
+    userRef.current = nextUser;
+    setUser(nextUser);
+    if (!nextUser) setIsAdmin(false);
+  }, []);
+
+  const checkAdmin = useCallback(async (userId) => {
+    const id = userId ?? userRef.current?.id;
+    if (!id) return false;
+    if (checkRef.current?.id === id) return checkRef.current.promise;
+
     setAdminLoading(true);
-    const { data, error } = await supabase.rpc('is_admin');
-    const allowed = !error && data === true;
-    setIsAdmin(allowed);
-    setAdminLoading(false);
-    return allowed;
-  };
+    const promise = (async () => {
+      try {
+        const { data, error } = await supabase.rpc('is_admin');
+        const allowed = !error && data === true && userRef.current?.id === id;
+        if (userRef.current?.id === id) setIsAdmin(allowed);
+        return allowed;
+      } catch {
+        if (userRef.current?.id === id) setIsAdmin(false);
+        return false;
+      } finally {
+        if (userRef.current?.id === id) setAdminLoading(false);
+        if (checkRef.current?.id === id) checkRef.current = null;
+      }
+    })();
+    checkRef.current = { id, promise };
+    return promise;
+  }, []);
 
   useEffect(() => {
     let active = true;
 
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!active) return;
-      const sessionUser = data?.session?.user ?? null;
-      setUser(sessionUser);
-      if (sessionUser) await checkAdmin();
-      if (active) setLoading(false);
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!active) return;
+        const sessionUser = data?.session?.user ?? null;
+        applyUser(sessionUser);
+        if (sessionUser) await checkAdmin(sessionUser.id);
+      } catch {
+        if (active) setIsAdmin(false);
+      } finally {
+        if (active) setLoading(false);
+      }
     })();
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       const nextUser = session?.user ?? null;
-      setUser(nextUser);
-      if (nextUser) {
-        setLoading(true);
-        checkAdmin().finally(() => setLoading(false));
-      } else {
-        setIsAdmin(false);
+      applyUser(nextUser);
+      if (!nextUser) {
         setLoading(false);
+        setAdminLoading(false);
+        return;
       }
+      setLoading(true);
+      checkAdmin(nextUser.id).finally(() => {
+        if (active) setLoading(false);
+      });
     });
 
     return () => {
       active = false;
       sub.subscription.unsubscribe();
     };
-  }, []);
+  }, [applyUser, checkAdmin]);
 
-  const login = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error || !data?.user) return { data: null, error };
+  const login = useCallback(
+    async (email, password) => {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error || !data?.user) return { data: null, error };
 
-    const allowed = await checkAdmin();
-    if (!allowed) {
-      await supabase.auth.signOut();
-      setUser(null);
-      setIsAdmin(false);
-      return { data: null, error: { message: 'This account does not have admin access.' } };
-    }
+        applyUser(data.user);
+        const allowed = await checkAdmin(data.user.id);
+        if (!allowed) {
+          await supabase.auth.signOut();
+          applyUser(null);
+          return { data: null, error: { message: 'This account does not have admin access.' } };
+        }
+        return { data, error: null };
+      } catch (err) {
+        return { data: null, error: err };
+      }
+    },
+    [applyUser, checkAdmin],
+  );
 
-    return { data, error: null };
-  };
-
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    setIsAdmin(false);
-  };
+    applyUser(null);
+    setLoading(false);
+    setAdminLoading(false);
+  }, [applyUser]);
 
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin, adminLoading, login, logout }}>

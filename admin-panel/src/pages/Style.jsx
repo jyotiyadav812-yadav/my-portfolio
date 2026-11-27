@@ -59,6 +59,7 @@ export default function Style() {
         className="space-y-6"
       >
         <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-6">
+          <h3 className="text-sm font-semibold text-text">Theme settings</h3>
           <div>
             <label className="block text-sm font-medium text-muted mb-2">Site font</label>
             <select

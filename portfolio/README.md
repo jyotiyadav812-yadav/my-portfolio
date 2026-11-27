@@ -17,7 +17,7 @@ Content is managed from the password-protected admin panel in `../admin-panel`. 
 3. Your site will be live at `https://<your-username>.github.io/<repository-name>/`.
 
 ## Contact
-- Email: jyotiyadav812@gmail.com
+- Email: jyotiiyadav812@gmail.com
 - LinkedIn: https://www.linkedin.com/in/jyoti-yadav-b5b2a743a
 - GitHub: https://github.com/jyotiyadav812-yadav
 - Instagram: https://www.instagram.com/yadavjyoti812

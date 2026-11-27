@@ -16,7 +16,11 @@ Fill `.env`:
 - `VITE_SUPABASE_ANON_KEY` — publishable/anon key (safe for browser use; access is controlled by RLS)
 - `VITE_SITE_URL` — link used by the “View portfolio” button (e.g. `/portfolio/index.html` or the deployed URL)
 
-## 2. Database setup
+## 2. Create the login first
+
+Only emails in `admin_users` can sign in. In Supabase, open **Authentication → Users → Add user**, create the admin account, and make sure it is confirmed if email confirmation is enabled. Create this user **before** running the SQL setup so the allow-list can be seeded correctly.
+
+## 3. Database setup
 
 Easiest option: open the Supabase SQL editor, paste the whole contents of `supabase/setup_all.sql`, and click **Run**. It is idempotent, so it can be run again safely.
 
@@ -29,11 +33,7 @@ If you prefer the separate migration files, run these in order:
 
 Both options add the newest existing Auth user to the allow-list. If you add or replace the user later, run `supabase/add_current_admin.sql` to refresh it.
 
-## 3. Create the login
-
-Only emails in `admin_users` can sign in. An existing Supabase Auth user works as-is if its email is in `admin_users`; otherwise create one in **Authentication → Users → Add user**, then run `supabase/add_current_admin.sql` to add the newest user to the allow-list. Make sure the account is confirmed if email confirmation is enabled.
-
-Existing admins can add or remove others from **Admins** inside the panel.
+Existing admins can add or remove others from **Admins** inside the panel, and can change their own email or password from **Account**. When changing your email there, confirm the new address before removing the old one from the allow-list.
 
 ## 4. Run
 
@@ -71,4 +71,4 @@ Deploy `index.html` and `cms.js` together. Changes saved in the admin panel appe
 
 ## Sections you can edit
 
-Dashboard, Site & Hero, Navigation, Profile, Skills, AI Tools, Projects, Education, FAQ, Contact, Footer, Style & Fonts, Messages, Admins.
+Dashboard, Site & Hero, Navigation, Profile, Skills, AI Tools, Projects, Education, FAQ, Contact, Footer, Style & Fonts, Messages, Admins, Account.

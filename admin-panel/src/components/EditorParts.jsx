@@ -4,11 +4,11 @@ export function SectionCard({ title, onAdd, children }) {
   return (
     <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <p className="text-sm font-medium text-muted">{title}</p>
+        <h3 className="text-sm font-semibold text-text">{title}</h3>
         <button
           type="button"
           onClick={onAdd}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm text-lavender hover:bg-[#F3EDFF] shrink-0"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm font-medium text-lavender hover:bg-[#F3EDFF] shrink-0 transition-colors"
         >
           <Plus size={16} /> Add
         </button>

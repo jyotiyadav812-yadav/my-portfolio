@@ -54,7 +54,8 @@ export default function Education() {
         }}
         className="space-y-6"
       >
-        <div className="bg-white p-6 rounded-xl border border-border shadow-sm">
+        <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-5">
+          <h3 className="text-sm font-semibold text-text">Education intro</h3>
           <label className="block text-sm font-medium text-muted mb-1.5">Section intro</label>
           <input
             className="w-full px-3 py-2.5 border border-border rounded-lg"

@@ -13,6 +13,30 @@ create trigger site_content_set_updated_at
 before update on public.site_content
 for each row execute function public.set_updated_at();
 
+create or replace function public.limit_message_rate()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if (
+    select count(*)
+    from public.messages
+    where lower(email) = lower(new.email)
+      and created_at > now() - interval '1 minute'
+  ) >= 3 then
+    raise exception 'Too many messages. Please try again later.';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists messages_rate_limit on public.messages;
+create trigger messages_rate_limit
+before insert on public.messages
+for each row execute function public.limit_message_rate();
+
 drop policy if exists "messages public select" on public.messages;
 drop policy if exists "messages admin select" on public.messages;
 create policy "messages admin select" on public.messages
@@ -20,10 +44,11 @@ create policy "messages admin select" on public.messages
 revoke select on public.messages from anon;
 grant select on public.messages to authenticated;
 
+drop policy if exists "messages admin insert" on public.messages;
 drop policy if exists "messages public insert" on public.messages;
 create policy "messages public insert" on public.messages
   for insert to anon, authenticated with check (true);
-grant insert on public.messages to anon;
+grant insert on public.messages to anon, authenticated;
 
 drop policy if exists "site images public read" on storage.objects;
 create policy "site images public read" on storage.objects
@@ -38,7 +63,7 @@ insert into public.site_content (key, value) values
 ('tools', '{"items":[{"name":"ChatGPT","description":"Conversational AI for brainstorming, writing and learning.","color":"#10A37F","logo_url":""},{"name":"Google Gemini","description":"Google’s multimodal AI for ideas, research and code.","color":"#9B72CB","logo_url":""},{"name":"Claude","description":"Thoughtful AI assistant for writing, analysis and coding.","color":"#D97757","logo_url":""},{"name":"Canva AI","description":"Design assistant for quick, beautiful visuals.","color":"#7D2AE8","logo_url":""},{"name":"Microsoft Copilot","description":"AI companion across Microsoft apps and the web.","color":"#2F8BFF","logo_url":""},{"name":"Perplexity AI","description":"Answer engine with sourced, up-to-date research.","color":"#20808D","logo_url":""},{"name":"GitHub Copilot","description":"AI pair programmer inside the code editor.","color":"#24292F","logo_url":""},{"name":"Google AI Studio","description":"Google’s playground for prototyping with Gemini and building AI apps.","color":"#4285F4","logo_url":""},{"name":"Suno AI","description":"Turns text prompts into full songs with vocals and music.","color":"#555566","logo_url":""},{"name":"ElevenLabs","description":"Realistic AI voiceovers, text-to-speech and voice tools.","color":"#25243A","logo_url":""},{"name":"CapCut","description":"Popular video editor with templates, effects and AI features.","color":"#444455","logo_url":""}],"showcase_title":"Where ideas meet intelligence","showcase_text":"AI isn’t a shortcut for me, it’s a creative co-pilot. I explore tools like ChatGPT, Gemini, Claude, Google AI Studio, Suno, ElevenLabs and CapCut to turn a spark of an idea into websites, music, voices and videos.","quote":"Tools change every day. Curiosity never goes out of style.","chips":["Ideate","Build","Create","Repeat"]}'::jsonb),
 ('education', '{"intro":"From school boards to AI-powered marketing, every step has added a new skill to my toolkit.","items":[{"title":"10th","place":"HBSE","year":"","score":79.8,"tag":"Foundation","tagline":"Where it all began","emoji":"📘","icon":"10","grow":"🌱","chips":[]},{"title":"12th (Arts)","place":"HBSE","year":"","score":90.2,"tag":"Higher Secondary","tagline":"Scoring higher, dreaming bigger","emoji":"📖","icon":"12","grow":"🌿","chips":["Arts stream"]},{"title":"Bachelor of Arts","place":"Kurukshetra University","year":"","score":60,"tag":"Graduation","tagline":"Broadening my horizons","emoji":"🎓","icon":"BA","grow":"🌳","chips":[]},{"title":"Digital Marketing with AI","place":"Course","year":"","score":null,"tag":"Present","tagline":"Where marketing meets AI","emoji":"📈","icon":"AI","grow":"🌸","chips":["Digital Marketing","AI Tools"]}]}'::jsonb),
 ('faq', '{"items":[{"icon":"👋","question":"Who is Jyoti Yadav?","answer":"I am an aspiring web developer, AI tools enthusiast and digital creator. I am currently pursuing a Digital Marketing with AI course and love turning ideas into clean, usable websites."},{"icon":"🛠️","question":"What skills do you have?","answer":"HTML, CSS and JavaScript basics, frontend development and website designing, plus video editing, graphic designing, SEO, digital marketing, content creation, social media management and AI tools & prompt engineering."},{"icon":"🤖","question":"Which AI tools do you use?","answer":"I explore ChatGPT, Gemini, Claude, Google AI Studio, Canva AI, Suno AI, ElevenLabs, CapCut, Microsoft Copilot, Perplexity and GitHub Copilot to ideate, build and create faster."},{"icon":"🎮","question":"What projects have you worked on?","answer":"A 3D Road Runner game made with Google AI Studio, an AI Student Career Agent (concept) and a website for a Common Service Centre (CSC). You can find them in the Projects section."},{"icon":"🎓","question":"What is your educational background?","answer":"10th from HBSE with 79.8%, 12th (Arts) from HBSE with 90.2%, a Bachelor of Arts from Kurukshetra University with 60%, and I am now pursuing Digital Marketing with AI."},{"icon":"📚","question":"What are you learning right now?","answer":"Digital Marketing with AI is my current course, and I keep practising web development and AI-assisted development alongside it."},{"icon":"📬","question":"How can I contact you?","answer":"Email me, call me, or message me on LinkedIn, GitHub or Instagram. All the links are in the Contact section and the footer."}]}'::jsonb),
-('contact', '{"email":"jyotiyadav812@gmail.com","phone":"+91 93506 06197","linkedin":"https://www.linkedin.com/in/jyoti-yadav-b5b2a743a","github":"https://github.com/jyotiyadav812-yadav","instagram":"https://www.instagram.com/yadavjyoti812","intro":"Have an idea or opportunity? I’d love to hear from you.","form_note":"Fill this in and your message will be saved. Your email app can also open with a copy ready to send."}'::jsonb),
+('contact', '{"email":"jyotiiyadav812@gmail.com","phone":"+91 93506 06197","linkedin":"https://www.linkedin.com/in/jyoti-yadav-b5b2a743a","github":"https://github.com/jyotiyadav812-yadav","instagram":"https://www.instagram.com/yadavjyoti812","intro":"Have an idea or opportunity? I’d love to hear from you.","form_note":"Fill this in and your message will be saved. Your email app can also open with a copy ready to send."}'::jsonb),
 ('footer', '{"tagline":"Aspiring web developer, AI tools explorer and digital creator.","copyright":"Jyoti Yadav. All rights reserved.","credit":"Designed with creativity by Jyoti Yadav","logo_url":"","cta_title":"Have an idea or opportunity?","cta_text":"Let’s connect and create something great together.","links":[{"label":"About","url":"#about"},{"label":"Skills","url":"#skills"},{"label":"AI Tools","url":"#aitools"},{"label":"Projects","url":"#projects"},{"label":"Education","url":"#education"},{"label":"Contact","url":"#contact"},{"label":"FAQ","url":"#faq"}],"expertise":["Frontend Development","AI Tools & Prompt Engineering","Video Editing","Digital Marketing"]}'::jsonb),
 ('style', '{"font":"Plus Jakarta Sans","primary":"#8B5CF6","accent":"#67DDF5"}'::jsonb)
 on conflict (key) do nothing;

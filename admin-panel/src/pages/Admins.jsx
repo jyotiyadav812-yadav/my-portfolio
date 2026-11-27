@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Plus, Save, Shield, Trash2 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../contexts/AuthContext';
 import Toast from '../components/Toast';
 
 export default function Admins() {

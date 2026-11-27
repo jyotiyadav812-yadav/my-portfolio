@@ -60,6 +60,7 @@ export default function Footer() {
         className="space-y-6"
       >
         <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-5">
+          <h3 className="text-sm font-semibold text-text">Call to action</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-muted mb-1.5">CTA title</label>
@@ -113,7 +114,7 @@ export default function Footer() {
 
         <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted">Quick links</p>
+            <h3 className="text-sm font-semibold text-text">Quick links</h3>
             <button
               type="button"
               onClick={() => update('links', [...form.links, { label: '', url: '' }])}
@@ -150,7 +151,7 @@ export default function Footer() {
 
         <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-muted">Expertise list</p>
+            <h3 className="text-sm font-semibold text-text">Expertise list</h3>
             <button
               type="button"
               onClick={() => update('expertise', [...form.expertise, ''])}

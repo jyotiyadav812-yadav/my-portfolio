@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Inbox, List, Palette, Sparkles, User } from 'lucide-react';
 import { supabase } from '../supabaseClient';
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const QUICK_LINKS = [
   { to: '/admin/site', label: 'Site & Hero', description: 'Headline, buttons, badges', Icon: Sparkles },

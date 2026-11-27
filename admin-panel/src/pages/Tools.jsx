@@ -60,6 +60,7 @@ export default function Tools() {
         className="space-y-6"
       >
         <div className="bg-white p-6 rounded-xl border border-border shadow-sm space-y-5">
+          <h3 className="text-sm font-semibold text-text">AI showcase copy</h3>
           <div>
             <label className="block text-sm font-medium text-muted mb-1.5">Showcase title</label>
             <input

@@ -16,26 +16,37 @@ create table if not exists messages (
 alter table site_content enable row level security;
 alter table messages enable row level security;
 
-create policy "site_content public select" on site_content
+drop policy if exists "site_content public select" on public.site_content;
+create policy "site_content public select" on public.site_content
   for select using (true);
-create policy "site_content admin insert" on site_content
-  for insert with check (is_admin());
-create policy "site_content admin update" on site_content
-  for update using (is_admin());
-create policy "site_content admin delete" on site_content
-  for delete using (is_admin());
-grant select on site_content to anon, authenticated;
-grant insert, update, delete on site_content to authenticated;
+drop policy if exists "site_content admin insert" on public.site_content;
+create policy "site_content admin insert" on public.site_content
+  for insert with check (public.is_admin());
+drop policy if exists "site_content admin update" on public.site_content;
+create policy "site_content admin update" on public.site_content
+  for update using (public.is_admin());
+drop policy if exists "site_content admin delete" on public.site_content;
+create policy "site_content admin delete" on public.site_content
+  for delete using (public.is_admin());
+grant select on public.site_content to anon, authenticated;
+grant insert, update, delete on public.site_content to authenticated;
 
-create policy "messages public select" on messages
-  for select using (true);
-create policy "messages admin insert" on messages
-  for insert with check (is_admin());
-create policy "messages admin update" on messages
-  for update using (is_admin());
-create policy "messages admin delete" on messages
-  for delete using (is_admin());
-grant select on messages to anon, authenticated;
-grant insert, update, delete on messages to authenticated;
+drop policy if exists "messages public select" on public.messages;
+drop policy if exists "messages admin select" on public.messages;
+create policy "messages admin select" on public.messages
+  for select to authenticated using (public.is_admin());
+drop policy if exists "messages public insert" on public.messages;
+create policy "messages public insert" on public.messages
+  for insert to anon, authenticated with check (true);
+drop policy if exists "messages admin update" on public.messages;
+create policy "messages admin update" on public.messages
+  for update to authenticated using (public.is_admin());
+drop policy if exists "messages admin delete" on public.messages;
+create policy "messages admin delete" on public.messages
+  for delete to authenticated using (public.is_admin());
+revoke select on public.messages from anon;
+grant select on public.messages to authenticated;
+grant insert on public.messages to anon, authenticated;
+grant update, delete on public.messages to authenticated;
 
 notify pgrst, 'reload schema';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/authContext';
+import { useAuth } from '../contexts/AuthContext';
 import {
   LogOut,
   User,
@@ -17,6 +17,7 @@ import {
   Inbox,
   ExternalLink,
   X,
+  KeyRound,
 } from 'lucide-react';
 
 const groups = [
@@ -45,6 +46,7 @@ const groups = [
       { to: '/admin/style', label: 'Style & Fonts', Icon: Palette },
       { to: '/admin/messages', label: 'Messages', Icon: Inbox },
       { to: '/admin/admins', label: 'Admins', Icon: Shield },
+      { to: '/admin/account', label: 'Account', Icon: KeyRound },
     ],
   },
 ];
@@ -159,7 +161,7 @@ export default function Layout() {
       </aside>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 h-16 flex items-center gap-4 px-4 sm:px-6 bg-white/90 backdrop-blur border-b border-border">
+        <header className="relative z-20 h-16 flex items-center gap-4 px-4 sm:px-6 bg-white border-b border-border shrink-0">
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
