@@ -69,42 +69,42 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-bg">
       {menuOpen && (
         <button
           type="button"
           aria-label="Close menu"
           onClick={() => setMenuOpen(false)}
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+          className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-border z-40 flex flex-col transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[260px] flex-col border-r border-border bg-white transition-transform duration-200 ${
           menuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        <div className="h-16 flex items-center justify-between px-5 border-b border-border shrink-0">
-          <NavLink to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-lavender to-cyan grid place-items-center text-white font-bold text-sm">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-4">
+          <NavLink to="/admin" onClick={() => setMenuOpen(false)} className="flex min-w-0 items-center gap-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-lavender to-cyan text-sm font-bold text-white">
               JY
             </span>
-            <span className="font-bold text-text">Portfolio Admin</span>
+            <span className="truncate font-bold text-text">Portfolio Admin</span>
           </NavLink>
           <button
             type="button"
             onClick={() => setMenuOpen(false)}
-            className="p-1.5 rounded text-muted hover:bg-surface lg:hidden"
+            className="rounded-lg p-1.5 text-muted hover:bg-surface lg:hidden"
             aria-label="Close menu"
           >
             <X size={18} />
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-6">
+        <nav className="flex-1 space-y-6 overflow-y-auto py-5">
           {groups.map((group) => (
             <div key={group.label}>
-              <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[.15em] text-muted">
+              <p className="mb-2 px-4 text-[10px] font-semibold uppercase tracking-[.15em] text-muted">
                 {group.label}
               </p>
               <div className="space-y-1">
@@ -115,15 +115,15 @@ export default function Layout() {
                     end={end}
                     onClick={() => setMenuOpen(false)}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+                      `flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-sm transition ${
                         isActive
-                          ? 'bg-[#F3EDFF] text-lavender'
-                          : 'text-muted hover:bg-surface hover:text-text'
+                          ? 'bg-[#F3EDFF] font-bold text-lavender'
+                          : 'font-medium text-muted hover:bg-surface hover:text-text'
                       }`
                     }
                   >
                     <Icon size={17} className="shrink-0" />
-                    {label}
+                    <span className="truncate">{label}</span>
                   </NavLink>
                 ))}
               </div>
@@ -131,28 +131,29 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border shrink-0">
+        <div className="shrink-0 border-t border-border p-4">
           <a
             href={siteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full px-3 py-2.5 mb-3 text-sm font-medium text-lavender border border-border rounded-lg hover:bg-[#F3EDFF] transition"
+            className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-border px-3 py-2.5 text-sm font-medium text-lavender transition hover:bg-[#F3EDFF]"
           >
             View portfolio <ExternalLink size={15} />
           </a>
           <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-full bg-gradient-to-br from-lavender to-cyan grid place-items-center text-white text-xs font-bold shrink-0">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-lavender to-cyan text-xs font-bold text-white">
               {user?.email?.slice(0, 2).toUpperCase() || 'AD'}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-text truncate">{user?.email}</p>
+              <p className="truncate text-xs font-medium text-text">{user?.email}</p>
               <p className="text-[11px] text-muted">Administrator</p>
             </div>
             <button
               type="button"
               onClick={handleLogout}
               title="Logout"
-              className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition"
+              aria-label="Logout"
+              className="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
             >
               <LogOut size={17} />
             </button>
@@ -160,31 +161,32 @@ export default function Layout() {
         </div>
       </aside>
 
-      <div className="lg:pl-64">
-        <header className="relative z-20 h-16 flex items-center gap-4 px-4 sm:px-6 bg-white border-b border-border shrink-0">
+      <div className="min-w-0 lg:pl-[260px]">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-border bg-white px-4 sm:px-6">
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="p-2 rounded-lg text-muted hover:bg-surface lg:hidden"
+            className="rounded-lg p-2 text-muted hover:bg-surface lg:hidden"
             aria-label="Open menu"
           >
             <Menu size={20} />
           </button>
           <div className="min-w-0">
-            <h1 className="text-base sm:text-lg font-bold text-text truncate">{pageTitle}</h1>
-            <p className="text-[11px] text-muted hidden sm:block">Manage your portfolio content</p>
+            <h1 className="truncate text-base font-bold text-text sm:text-lg">{pageTitle}</h1>
+            <p className="hidden text-[11px] text-muted sm:block">Manage your portfolio content</p>
           </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="ml-auto flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition"
-          >
-            <LogOut size={16} /> <span className="hidden sm:inline">Logout</span>
-          </button>
+          <div className="ml-auto flex items-center gap-3">
+            <span className="hidden text-xs text-muted sm:block">{user?.email}</span>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-lavender to-cyan text-xs font-bold text-white">
+              {user?.email?.slice(0, 2).toUpperCase() || 'AD'}
+            </span>
+          </div>
         </header>
 
-        <main className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
-          <Outlet />
+        <main className="min-w-0 px-4 pb-10 pt-6 sm:px-6">
+          <div className="mx-auto w-full max-w-[1200px]">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

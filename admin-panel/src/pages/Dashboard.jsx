@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Inbox, List, Palette, Sparkles, User } from 'lucide-react';
+import { ArrowRight, Briefcase, Inbox, List, Sparkles, User } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 
 const QUICK_LINKS = [
-  { to: '/admin/site', label: 'Site & Hero', description: 'Headline, buttons, badges', Icon: Sparkles },
   { to: '/admin/profile', label: 'Profile', description: 'Name, about, photos', Icon: User },
+  { to: '/admin/site', label: 'Site & Hero', description: 'Headline, buttons, badges', Icon: Sparkles },
   { to: '/admin/skills', label: 'Skills', description: 'Skills and marquee', Icon: List },
-  { to: '/admin/style', label: 'Style & Fonts', description: 'Font and colors', Icon: Palette },
   { to: '/admin/messages', label: 'Messages', description: 'Contact submissions', Icon: Inbox },
+  { to: '/admin/projects', label: 'Projects', description: 'Featured work', Icon: Briefcase },
+  { to: '/admin/tools', label: 'Tools', description: 'AI tools showcase', Icon: Sparkles },
 ];
 
 export default function Dashboard() {
@@ -43,9 +44,10 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard label="Content sections" value={stats.sections} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Projects" value={stats.projects} />
+        <StatCard label="Skills" value="—" hint="Managed in content" />
+        <StatCard label="Tools" value="—" hint="Managed in content" />
         <StatCard label="Messages" value={stats.messages} />
       </div>
 
@@ -56,7 +58,7 @@ export default function Dashboard() {
             <Link
               key={to}
               to={to}
-              className="group bg-white p-5 rounded-xl border border-border shadow-sm hover:border-lavender hover:shadow-md transition"
+              className="group min-w-0 rounded-xl border border-border bg-white p-5 shadow-sm transition hover:border-lavender hover:shadow-md"
             >
               <span className="w-10 h-10 rounded-lg bg-[#F3EDFF] text-lavender grid place-items-center mb-4">
                 <Icon size={19} />
@@ -74,11 +76,12 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value }) {
+function StatCard({ label, value, hint }) {
   return (
-    <div className="bg-white rounded-xl border border-border shadow-sm p-5">
-      <p className="text-3xl font-bold text-lavender">{value}</p>
-      <p className="text-sm text-muted mt-1">{label}</p>
+    <div className="min-w-0 rounded-xl border border-border bg-white p-5 shadow-sm">
+      <p className={`font-bold text-lavender ${typeof value === 'number' ? 'text-3xl' : 'text-xl'}`}>{value}</p>
+      <p className="mt-1 truncate text-sm text-muted">{label}</p>
+      {hint && <p className="mt-1 truncate text-[11px] text-muted">{hint}</p>}
     </div>
   );
 }
