@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DeleteGuardProvider } from './contexts/DeleteGuardContext';
 import Login from './pages/Login';
@@ -10,6 +11,7 @@ import Profile from './pages/Profile';
 import Skills from './pages/Skills';
 import Tools from './pages/Tools';
 import Projects from './pages/Projects';
+import Seo from './pages/Seo';
 import Education from './pages/Education';
 import Faq from './pages/Faq';
 import Contact from './pages/Contact';
@@ -53,40 +55,43 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
-        <DeleteGuardProvider>
-          <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="admin" element={<Dashboard />} />
-            <Route path="admin/site" element={<Site />} />
-            <Route path="admin/nav" element={<Nav />} />
-            <Route path="admin/profile" element={<Profile />} />
-            <Route path="admin/contact" element={<Contact />} />
-            <Route path="admin/footer" element={<Footer />} />
-            <Route path="admin/style" element={<Style />} />
-            <Route path="admin/skills" element={<Skills />} />
-            <Route path="admin/tools" element={<Tools />} />
-            <Route path="admin/education" element={<Education />} />
-            <Route path="admin/faq" element={<Faq />} />
-            <Route path="admin/projects" element={<Projects />} />
-            <Route path="admin/messages" element={<Messages />} />
-            <Route path="admin/admins" element={<Admins />} />
-            <Route path="admin/account" element={<Account />} />
+    <HelmetProvider>
+      <AuthProvider>
+        <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
+          <DeleteGuardProvider>
+            <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="admin" element={<Dashboard />} />
+              <Route path="admin/site" element={<Site />} />
+              <Route path="admin/nav" element={<Nav />} />
+              <Route path="admin/profile" element={<Profile />} />
+              <Route path="admin/contact" element={<Contact />} />
+              <Route path="admin/footer" element={<Footer />} />
+              <Route path="admin/style" element={<Style />} />
+              <Route path="admin/skills" element={<Skills />} />
+              <Route path="admin/tools" element={<Tools />} />
+              <Route path="admin/education" element={<Education />} />
+              <Route path="admin/faq" element={<Faq />} />
+              <Route path="admin/projects" element={<Projects />} />
+              <Route path="admin/seo" element={<Seo />} />
+              <Route path="admin/messages" element={<Messages />} />
+              <Route path="admin/admins" element={<Admins />} />
+              <Route path="admin/account" element={<Account />} />
+              <Route path="*" element={<Navigate to="/admin" replace />} />
+            </Route>
             <Route path="*" element={<Navigate to="/admin" replace />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/admin" replace />} />
-          </Routes>
-        </DeleteGuardProvider>
-      </BrowserRouter>
-    </AuthProvider>
+            </Routes>
+          </DeleteGuardProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

@@ -2,6 +2,7 @@
   const url = window.PORTFOLIO_SUPABASE_URL || 'https://ytifshsbiqtntgjshqpm.supabase.co';
   const key = window.PORTFOLIO_SUPABASE_KEY || 'sb_publishable_G9RXhsTAqSDPOIs0Sbbe3g_THoGdzJc';
   const headers = { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
+  const SITE_URL = window.PORTFOLIO_SITE_URL || 'https://jyotiyadav812-yadav.github.io/my-portfolio/';
 
   window.portfolioSendMessage = async function (payload) {
     try {
@@ -196,6 +197,63 @@
     if (content.style) applyStyle(content.style);
   }
 
+  function setMeta(selector, attr, value) {
+    if (!value) return;
+    let el = document.head.querySelector(selector);
+    if (!el) {
+      el = document.createElement('meta');
+      const m = selector.match(/\[(name|property)="([^"]+)"\]/);
+      if (m) el.setAttribute(m[1], m[2]);
+      document.head.appendChild(el);
+    }
+    el.setAttribute(attr, value);
+  }
+
+  function applySeo(settings, content) {
+    const site = content.site || {};
+    const contact = content.contact || {};
+    const seoTitle = settings.seo_title || site.title || document.title;
+    const seoDesc = settings.seo_description || site.description || '';
+    const ogImage = settings.og_image_url || '';
+
+    if (seoTitle) document.title = seoTitle;
+    setMeta('meta[name="description"]', 'content', seoDesc);
+    setMeta('meta[name="keywords"]', 'content', settings.keywords || '');
+    setMeta('meta[property="og:title"]', 'content', seoTitle);
+    setMeta('meta[property="og:description"]', 'content', seoDesc);
+    setMeta('meta[property="og:url"]', 'content', SITE_URL);
+    setMeta('meta[property="og:image"]', 'content', ogImage);
+    setMeta('meta[name="twitter:title"]', 'content', seoTitle);
+    setMeta('meta[name="twitter:description"]', 'content', seoDesc);
+    setMeta('meta[name="twitter:image"]', 'content', ogImage);
+
+    let canonical = document.head.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', SITE_URL);
+
+    const sameAs = [contact.linkedin, contact.github, contact.instagram].filter(Boolean);
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: site.name || 'Jyoti Yadav',
+      jobTitle: 'Aspiring Web Developer',
+      url: SITE_URL,
+    };
+    if (sameAs.length) schema.sameAs = sameAs;
+    let ld = document.getElementById('cms-jsonld');
+    if (!ld) {
+      ld = document.createElement('script');
+      ld.id = 'cms-jsonld';
+      ld.setAttribute('type', 'application/ld+json');
+      document.head.appendChild(ld);
+    }
+    ld.textContent = JSON.stringify(schema);
+  }
+
   async function init() {
     const [rows, projects] = await Promise.all([
       readTable('site_content', 'select=key,value'),
@@ -206,6 +264,15 @@
       content[row.key] = row.value || {};
     });
     applyContent(content, projects);
+
+    // SEO settings are best-effort: a missing table/column must not break content.
+    try {
+      const settingsRows = await readTable('site_settings', 'select=seo_title,seo_description,og_image_url,keywords&id=eq.1');
+      applySeo(Array.isArray(settingsRows) ? settingsRows[0] || {} : {}, content);
+    } catch (seoError) {
+      console.warn('SEO settings unavailable', seoError);
+    }
+
     if (window.__renderCMS) window.__renderCMS();
     document.documentElement.dataset.cms = 'ready';
   }

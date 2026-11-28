@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jyotiyadav812-yadav.github.io/my-portfolio/sitemap.xml

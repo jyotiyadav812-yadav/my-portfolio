@@ -3,9 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jyoti Yadav | Aspiring Web Developer & AI Tools Enthusiast</title>
+<title>Jyoti Yadav | Aspiring Web Developer &amp; AI Tools Enthusiast</title>
 <meta name="description" content="Portfolio of Jyoti Yadav: aspiring web developer, AI tools enthusiast and digital creator.">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jyoti Yadav","jobTitle":"Aspiring Web Developer"}</script>
+<meta name="keywords" content="Jyoti Yadav, web developer, frontend developer, AI tools, digital marketing, video editing, SEO">
+<meta name="author" content="Jyoti Yadav">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jyotiyadav812-yadav.github.io/my-portfolio/">
+<meta name="theme-color" content="#8B5CF6">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%238B5CF6'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='26' font-weight='700' fill='%23fff'%3EJY%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Jyoti Yadav">
+<meta property="og:title" content="Jyoti Yadav | Aspiring Web Developer &amp; AI Tools Enthusiast">
+<meta property="og:description" content="Portfolio of Jyoti Yadav: aspiring web developer, AI tools enthusiast and digital creator.">
+<meta property="og:url" content="https://jyotiyadav812-yadav.github.io/my-portfolio/">
+<meta property="og:image" content="https://jyotiyadav812-yadav.github.io/my-portfolio/ogimage.png">
+<meta property="og:image:width" content="1574">
+<meta property="og:image:height" content="703">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jyoti Yadav | Aspiring Web Developer &amp; AI Tools Enthusiast">
+<meta name="twitter:description" content="Portfolio of Jyoti Yadav: aspiring web developer, AI tools enthusiast and digital creator.">
+<meta name="twitter:image" content="https://jyotiyadav812-yadav.github.io/my-portfolio/ogimage.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Jyoti Yadav","jobTitle":"Aspiring Web Developer","url":"https://jyotiyadav812-yadav.github.io/my-portfolio/","sameAs":["https://www.linkedin.com/in/jyoti-yadav-b5b2a743a","https://github.com/jyotiyadav812-yadav","https://www.instagram.com/yadavjyoti812"]}</script>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
@@ -82,7 +100,7 @@ const SKILLS=[["HTML","Semantic, accessible markup","</>"],["CSS","Layouts, styl
 
 /* ====== LOGOS (simplified brand marks; swap for official SVGs if desired) ====== */
 const G="url(#g)";
-function Logo({id}){if(D.logoImg&&D.logoImg[id])return e("img",{src:D.logoImg[id],alt:id,className:"w-full h-full rounded-2xl object-contain bg-white"});
+function Logo({id}){if(D.logoImg&&D.logoImg[id])return e("img",{src:D.logoImg[id],alt:id,loading:"lazy",className:"w-full h-full rounded-2xl object-contain bg-white"});
  const P={
   ChatGPT:[ "#10A37F",e("g",{fill:"none",stroke:"#fff",strokeWidth:1.6,strokeLinejoin:"round"},e("path",{d:"M12 3.5l7.4 4.25v8.5L12 20.5l-7.4-4.25v-8.5z"}),e("path",{d:"M12 8l3.6 2v4L12 16l-3.6-2v-4z"}))],
   Gemini:["#fff",e("g",null,e("defs",null,e("linearGradient",{id:"g",x1:0,y1:0,x2:1,y2:1},e("stop",{offset:0,stopColor:"#4285F4"}),e("stop",{offset:.6,stopColor:"#9B72CB"}),e("stop",{offset:1,stopColor:"#D96570"}))),e("path",{fill:G,d:"M12 1C12 7.6 16.4 12 23 12 16.4 12 12 16.4 12 23 12 16.4 7.6 12 1 12 7.6 12 12 7.6 12 1z"}))],
@@ -320,7 +338,7 @@ function Footer(){const nav=(D.footerLinks||["About","Skills","AI Tools","Projec
   e("div",{className:"max-w-6xl mx-auto relative z-10"},
    e(R,null,e("div",{className:"glass gb rounded-3xl p-7 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left"},e("div",null,e("h3",{className:"text-2xl md:text-3xl font-bold grad pb-1"},D.footerInfo&&D.footerInfo.cta_title||"Have an idea or opportunity?"),e("p",{className:"mt-2 text-[#25243A]/70"},D.footerInfo&&D.footerInfo.cta_text||"Let's connect and create something great together.")),e(Mag,{href:"mailto:"+D.email,primary:true},"Let's Connect"))),
    e("div",{className:"mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10 text-center sm:text-left"},
-    e("div",null,e("a",{href:"#home",className:"text-2xl font-bold grad"},D.footerLogo?e("img",{src:D.footerLogo,alt:D.siteName||"Logo",className:"h-10 max-w-[160px] object-contain mx-auto sm:mx-0"}):D.siteName||"Jyoti Yadav"),e("p",{className:"mt-3 text-sm text-[#25243A]/65 max-w-xs mx-auto sm:mx-0 leading-relaxed"},D.footerInfo&&D.footerInfo.tagline||"Aspiring web developer, AI tools explorer and digital creator."),e("div",{className:"mt-5 flex flex-wrap justify-center sm:justify-start gap-2"},social)),
+    e("div",null,e("a",{href:"#home",className:"text-2xl font-bold grad"},D.footerLogo?e("img",{src:D.footerLogo,alt:D.siteName||"Logo",loading:"lazy",className:"h-10 max-w-[160px] object-contain mx-auto sm:mx-0"}):D.siteName||"Jyoti Yadav"),e("p",{className:"mt-3 text-sm text-[#25243A]/65 max-w-xs mx-auto sm:mx-0 leading-relaxed"},D.footerInfo&&D.footerInfo.tagline||"Aspiring web developer, AI tools explorer and digital creator."),e("div",{className:"mt-5 flex flex-wrap justify-center sm:justify-start gap-2"},social)),
     col("Quick Links",e("ul",{className:"space-y-2.5"},nav.map(n=>e("li",{key:n.label},e("a",{href:n.url,className:lk},n.label))))),
     col("Expertise",e("ul",{className:"space-y-2.5"},ex.map(x=>e("li",{key:x},e("a",{href:"#skills",className:lk},x))))),
     col("Contact",e("ul",{className:"space-y-3"},e("li",{className:row},Ic("M4 6h16v12H4zM4 7l8 6 8-6"),e("a",{href:"mailto:"+D.email,className:lk+" break-all"},D.email)),e("li",{className:row},Ic("M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"),e("a",{href:D.phoneHref||"tel:+919350606197",className:lk},D.phone))))),

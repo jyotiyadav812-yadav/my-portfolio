@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../contexts/AuthContext';
 import {
   LogOut,
@@ -19,6 +20,7 @@ import {
   X,
   KeyRound,
   ArrowLeft,
+  Search,
 } from 'lucide-react';
 
 const groups = [
@@ -45,6 +47,7 @@ const groups = [
       { to: '/admin/contact', label: 'Contact', Icon: Mail },
       { to: '/admin/footer', label: 'Footer', Icon: LayoutDashboard },
       { to: '/admin/style', label: 'Style & Fonts', Icon: Palette },
+      { to: '/admin/seo', label: 'SEO', Icon: Search },
       { to: '/admin/messages', label: 'Messages', Icon: Inbox },
       { to: '/admin/admins', label: 'Admins', Icon: Shield },
       { to: '/admin/account', label: 'Account', Icon: KeyRound },
@@ -77,6 +80,11 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-[#FFF4FA] flex flex-col">
+      <Helmet>
+        <title>{pageTitle} · Portfolio Admin</title>
+        <meta name="description" content={`Manage ${pageTitle.toLowerCase()} for Jyoti Yadav's portfolio.`} />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {menuOpen && (
         <button
           type="button"
