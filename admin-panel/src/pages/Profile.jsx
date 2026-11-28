@@ -2,6 +2,7 @@ import { Save, Plus, Trash2, Sparkles } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
 import Toast from '../components/Toast';
 import { useSiteContent } from '../hooks/useSiteContent';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 
 const KEY = 'profile';
 
@@ -25,6 +26,7 @@ function normalize(value) {
 }
 
 export default function Profile() {
+  const confirmDelete = useDeleteGuard();
   const { form, setForm, loading, saving, error, toast, setToast, save } = useSiteContent(KEY, DEFAULTS, normalize);
 
   const update = (field, value) => setForm({ ...form, [field]: value });
@@ -32,6 +34,14 @@ export default function Profile() {
     const titles = [...form.titles];
     titles[index] = value;
     update('titles', titles);
+  };
+  const removeTitle = async (index) => {
+    const confirmed = await confirmDelete({
+      title: 'Remove typing title',
+      description: 'Enter your admin password to remove this title.',
+      confirmLabel: 'Remove',
+    });
+    if (confirmed) update('titles', form.titles.filter((_, i) => i !== index));
   };
 
   if (loading) return <p className="text-sm text-[#25243A]/50">Loading content...</p>;
@@ -134,7 +144,7 @@ export default function Profile() {
                   />
                   <button
                     type="button"
-                    onClick={() => update('titles', form.titles.filter((_, i) => i !== index))}
+                    onClick={() => removeTitle(index)}
                     disabled={form.titles.length <= 1}
                     className="p-2 text-red-500 hover:bg-red-50 rounded-xl disabled:opacity-40 transition"
                     aria-label="Remove title"

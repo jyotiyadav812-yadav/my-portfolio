@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 import { Upload, Trash2 } from 'lucide-react';
 
 export default function ImageUpload({ value, onChange, label = 'Image' }) {
+  const confirmDelete = useDeleteGuard();
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -27,8 +29,13 @@ export default function ImageUpload({ value, onChange, label = 'Image' }) {
     inputRef.current.value = '';
   };
 
-  const handleRemove = () => {
-    onChange(null);
+  const handleRemove = async () => {
+    const confirmed = await confirmDelete({
+      title: 'Remove image',
+      description: 'Enter your admin password to remove this image.',
+      confirmLabel: 'Remove',
+    });
+    if (confirmed) onChange(null);
   };
 
   return (

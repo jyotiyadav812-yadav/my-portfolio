@@ -2,6 +2,7 @@ import { Save } from 'lucide-react';
 import Toast from '../components/Toast';
 import { RowActions } from '../components/EditorParts';
 import { useSiteContent } from '../hooks/useSiteContent';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 
 const KEY = 'skills';
 
@@ -135,6 +136,17 @@ export default function Skills() {
 }
 
 function StringListEditor({ title, items, onAdd, onChange, onRemove }) {
+  const confirmDelete = useDeleteGuard();
+
+  const handleRemove = async (index) => {
+    const confirmed = await confirmDelete({
+      title: `Remove ${title.toLowerCase()} item`,
+      description: 'Enter your admin password to remove this item.',
+      confirmLabel: 'Remove',
+    });
+    if (confirmed) onRemove(index);
+  };
+
   return (
     <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm relative overflow-hidden">
       <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl bg-[#67DDF5]/15" />
@@ -149,7 +161,7 @@ function StringListEditor({ title, items, onAdd, onChange, onRemove }) {
             />
             <button
               type="button"
-              onClick={() => onRemove(index)}
+              onClick={() => handleRemove(index)}
               className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
               aria-label="Remove"
             >

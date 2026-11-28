@@ -64,8 +64,13 @@ export function AuthProvider({ children }) {
       }
     })();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') return;
       const nextUser = session?.user ?? null;
+      if (event === 'SIGNED_IN' && nextUser && userRef.current?.id === nextUser.id) {
+        applyUser(nextUser);
+        return;
+      }
       applyUser(nextUser);
       if (!nextUser) {
         setLoading(false);

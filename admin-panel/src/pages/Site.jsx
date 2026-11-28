@@ -2,6 +2,7 @@ import { Save, Trash2 } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
 import Toast from '../components/Toast';
 import { useSiteContent } from '../hooks/useSiteContent';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 
 const SITE_DEFAULTS = { name: '', title: '', description: '', logo_url: '' };
 const HERO_DEFAULTS = {
@@ -23,6 +24,7 @@ function normalizeHero(value) {
 }
 
 export default function Site() {
+  const confirmDelete = useDeleteGuard();
   const site = useSiteContent('site', SITE_DEFAULTS);
   const hero = useSiteContent('hero', HERO_DEFAULTS, normalizeHero);
   const activeToast = hero.toast || site.toast;
@@ -31,6 +33,15 @@ export default function Site() {
     const tags = [...hero.form.tags];
     tags[index] = { ...tags[index], [field]: value };
     hero.setForm({ ...hero.form, tags });
+  };
+
+  const removeHeroTag = async (index) => {
+    const confirmed = await confirmDelete({
+      title: 'Remove hero tag',
+      description: 'Enter your admin password to remove this tag.',
+      confirmLabel: 'Remove',
+    });
+    if (confirmed) hero.setForm({ ...hero.form, tags: hero.form.tags.filter((_, i) => i !== index) });
   };
 
   if (site.loading || hero.loading) return <p className="text-sm text-[#25243A]/50">Loading content...</p>;
@@ -121,7 +132,7 @@ export default function Site() {
                 />
                 <button
                   type="button"
-                  onClick={() => hero.setForm({ ...hero.form, tags: hero.form.tags.filter((_, i) => i !== index) })}
+                  onClick={() => removeHeroTag(index)}
                   className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
                   aria-label="Remove tag"
                 >

@@ -15,17 +15,20 @@ const QUICK_LINKS = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState({ sections: 0, projects: 0, messages: 0 });
+  const [stats, setStats] = useState({ sections: 0, skills: 0, tools: 0, projects: 0, messages: 0 });
 
   useEffect(() => {
     (async () => {
       const [content, projects, messages] = await Promise.all([
-        supabase.from('site_content').select('key'),
+        supabase.from('site_content').select('key, value'),
         supabase.from('projects').select('id'),
         supabase.from('messages').select('id'),
       ]);
+      const byKey = Object.fromEntries((content.data ?? []).map((row) => [row.key, row.value]));
       setStats({
         sections: content.data?.length ?? 0,
+        skills: Array.isArray(byKey.skills?.items) ? byKey.skills.items.length : 0,
+        tools: Array.isArray(byKey.tools?.items) ? byKey.tools.items.length : 0,
         projects: projects.data?.length ?? 0,
         messages: messages.data?.length ?? 0,
       });
@@ -47,8 +50,8 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Projects" value={stats.projects} color="#8B5CF6" />
-        <StatCard label="Skills" value="—" hint="Managed in content" color="#67DDF5" />
-        <StatCard label="Tools" value="—" hint="Managed in content" color="#B69CFF" />
+        <StatCard label="Skills" value={stats.skills} color="#67DDF5" />
+        <StatCard label="Tools" value={stats.tools} color="#B69CFF" />
         <StatCard label="Messages" value={stats.messages} color="#FFB6D9" />
       </div>
 

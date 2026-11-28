@@ -2,6 +2,7 @@ import { Plus, Save, Trash2 } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
 import Toast from '../components/Toast';
 import { useSiteContent } from '../hooks/useSiteContent';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 
 const KEY = 'footer';
 
@@ -26,9 +27,26 @@ function normalize(value) {
 }
 
 export default function Footer() {
+  const confirmDelete = useDeleteGuard();
   const { form, setForm, loading, saving, error, toast, setToast, save } = useSiteContent(KEY, DEFAULTS, normalize);
 
   const update = (field, value) => setForm({ ...form, [field]: value });
+  const removeLink = async (index) => {
+    const confirmed = await confirmDelete({
+      title: 'Remove footer link',
+      description: 'Enter your admin password to remove this link.',
+      confirmLabel: 'Remove',
+    });
+    if (confirmed) update('links', form.links.filter((_, i) => i !== index));
+  };
+  const removeExpertise = async (index) => {
+    const confirmed = await confirmDelete({
+      title: 'Remove expertise item',
+      description: 'Enter your admin password to remove this item.',
+      confirmLabel: 'Remove',
+    });
+    if (confirmed) update('expertise', form.expertise.filter((_, i) => i !== index));
+  };
   const updateLink = (index, field, value) => {
     const links = [...form.links];
     links[index] = { ...links[index], [field]: value };
@@ -143,7 +161,7 @@ export default function Footer() {
                   />
                   <button
                     type="button"
-                    onClick={() => update('links', form.links.filter((_, i) => i !== index))}
+                    onClick={() => removeLink(index)}
                     className="md:col-span-1 p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
                     aria-label="Remove link"
                   >
@@ -177,7 +195,7 @@ export default function Footer() {
                 />
                 <button
                   type="button"
-                  onClick={() => update('expertise', form.expertise.filter((_, i) => i !== index))}
+                  onClick={() => removeExpertise(index)}
                   className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
                   aria-label="Remove item"
                 >

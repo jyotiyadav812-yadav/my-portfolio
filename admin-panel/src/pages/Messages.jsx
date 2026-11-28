@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Check, Inbox, Trash2 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import Toast from '../components/Toast';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 
 export default function Messages() {
+  const confirmDelete = useDeleteGuard();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
@@ -42,9 +44,13 @@ export default function Messages() {
     else load();
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this message?')) return;
-    const { error: err } = await supabase.from('messages').delete().eq('id', id);
+  const handleDelete = async (message) => {
+    const confirmed = await confirmDelete({
+      title: 'Delete message',
+      description: `Delete the message from ${message.name || message.email}? This cannot be undone. Enter your admin password to confirm.`,
+    });
+    if (!confirmed) return;
+    const { error: err } = await supabase.from('messages').delete().eq('id', message.id);
     if (err) setToast({ kind: 'error', message: err.message });
     else {
       setToast({ kind: 'success', message: 'Message deleted.' });
@@ -116,7 +122,7 @@ export default function Messages() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(message.id)}
+                      onClick={() => handleDelete(message)}
                       className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition"
                       aria-label="Delete message"
                     >

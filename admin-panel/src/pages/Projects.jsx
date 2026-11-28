@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUp, Edit2, Save, Trash2 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import ImageUpload from '../components/ImageUpload';
 import Toast from '../components/Toast';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 
 const EMPTY = {
   title: '',
@@ -15,6 +16,7 @@ const EMPTY = {
 };
 
 export default function Projects() {
+  const confirmDelete = useDeleteGuard();
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState(EMPTY);
   const [loading, setLoading] = useState(true);
@@ -70,12 +72,16 @@ export default function Projects() {
 
   const startEdit = (project) => setForm({ ...project });
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this project?')) return;
-    const { error: err } = await supabase.from('projects').delete().eq('id', id);
+  const handleDelete = async (project) => {
+    const confirmed = await confirmDelete({
+      title: 'Delete project',
+      description: `Delete "${project.title}"? This cannot be undone. Enter your admin password to confirm.`,
+    });
+    if (!confirmed) return;
+    const { error: err } = await supabase.from('projects').delete().eq('id', project.id);
     if (err) setToast({ kind: 'error', message: err.message });
     else {
-      if (form.id === id) setForm(EMPTY);
+      if (form.id === project.id) setForm(EMPTY);
       setToast({ kind: 'success', message: 'Project deleted.' });
       load();
     }
@@ -98,11 +104,6 @@ export default function Projects() {
   };
 
   if (loading) return <p className="text-sm text-[#25243A]/50">Loading projects...</p>;
-
-  const getGradientColors = (gradient) => {
-    const parts = (gradient || '#8B5CF6,#67DDF5').split(',');
-    return parts.length >= 2 ? parts : ['#8B5CF6', '#67DDF5'];
-  };
 
   return (
     <div className="space-y-8">
@@ -154,9 +155,43 @@ export default function Projects() {
         </button>
       </form>
 
-      <div className="glass rounded-3xl p-8 sm:p-12 border border-[#B69CFF]/30 shadow-sm relative overflow-hidden">
+      <div className="glass rounded-3xl p-6 sm:p-12 border border-[#B69CFF]/30 shadow-sm relative overflow-hidden">
         <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full blur-2xl bg-[#67DDF5]/15" />
-        <div className="relative z-10 overflow-hidden">
+
+        <div className="relative z-10 space-y-4 md:hidden">
+          {projects.length === 0 ? (
+            <p className="p-8 text-center text-[#25243A]/50">No projects yet.</p>
+          ) : (
+            projects.map((project, index) => (
+              <div key={project.id} className="rounded-2xl border border-[#B69CFF]/30 bg-white/80 p-4">
+                <div className="flex items-center gap-3">
+                  <ProjectThumb project={project} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-[#25243A]">{project.title}</p>
+                    <p className="truncate text-xs text-[#25243A]/50">{project.description}</p>
+                  </div>
+                </div>
+                {project.link && (
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="mt-3 block truncate text-xs text-[#8B5CF6] hover:underline">
+                    {project.link}
+                  </a>
+                )}
+                <div className="mt-3">
+                  <ProjectActions
+                    project={project}
+                    index={index}
+                    total={projects.length}
+                    onMove={move}
+                    onEdit={startEdit}
+                    onDelete={handleDelete}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="relative z-10 hidden overflow-x-auto md:block">
           <table className="w-full text-left">
             <thead className="bg-[#F8F7FF]/50">
               <tr className="text-xs font-bold text-[#25243A]/60 uppercase tracking-wider">
@@ -176,18 +211,7 @@ export default function Projects() {
                   <tr key={project.id} className="border-t border-[#B69CFF]/20">
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-4">
-                        {project.image_url ? (
-                          <img src={project.image_url} alt="" className="w-12 h-12 rounded-xl object-cover border border-[#B69CFF]/30" />
-                        ) : (
-                          <span
-                            className="w-12 h-12 rounded-xl grid place-items-center text-xl shrink-0"
-                            style={{
-                              background: `linear-gradient(135deg, ${getGradientColors(project.gradient)[0]}, ${getGradientColors(project.gradient)[1]})`,
-                            }}
-                          >
-                            {project.emoji || '✦'}
-                          </span>
-                        )}
+                        <ProjectThumb project={project} />
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-[#25243A] truncate">{project.title}</p>
                           <p className="text-xs text-[#25243A]/50 truncate">{project.description}</p>
@@ -205,20 +229,14 @@ export default function Projects() {
                     </td>
                     <td className="px-4 py-4 hidden lg:table-cell text-sm text-[#25243A]/50">{project.sort_order}</td>
                     <td className="px-4 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button type="button" onClick={() => move(index, -1)} disabled={index === 0} className="p-2 text-[#25243A]/40 hover:bg-[#F8F7FF] rounded-xl disabled:opacity-40 transition" aria-label="Move up">
-                          <ArrowUp size={16} />
-                        </button>
-                        <button type="button" onClick={() => move(index, 1)} disabled={index === projects.length - 1} className="p-2 text-[#25243A]/40 hover:bg-[#F8F7FF] rounded-xl disabled:opacity-40 transition" aria-label="Move down">
-                          <ArrowDown size={16} />
-                        </button>
-                        <button type="button" onClick={() => startEdit(project)} className="p-2 text-[#8B5CF6] hover:bg-[#F3EDFF] rounded-xl transition" aria-label="Edit">
-                          <Edit2 size={16} />
-                        </button>
-                        <button type="button" onClick={() => handleDelete(project.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition" aria-label="Delete">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                      <ProjectActions
+                        project={project}
+                        index={index}
+                        total={projects.length}
+                        onMove={move}
+                        onEdit={startEdit}
+                        onDelete={handleDelete}
+                      />
                     </td>
                   </tr>
                 ))
@@ -227,6 +245,67 @@ export default function Projects() {
           </table>
         </div>
       </div>
+    </div>
+  );
+}
+
+function getGradientColors(gradient) {
+  const parts = (gradient || '#8B5CF6,#67DDF5').split(',');
+  return parts.length >= 2 ? parts : ['#8B5CF6', '#67DDF5'];
+}
+
+function ProjectThumb({ project }) {
+  if (project.image_url) {
+    return <img src={project.image_url} alt="" className="w-12 h-12 shrink-0 rounded-xl object-cover border border-[#B69CFF]/30" />;
+  }
+  const [from, to] = getGradientColors(project.gradient);
+  return (
+    <span
+      className="w-12 h-12 shrink-0 rounded-xl grid place-items-center text-xl"
+      style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
+    >
+      {project.emoji || '✦'}
+    </span>
+  );
+}
+
+function ProjectActions({ project, index, total, onMove, onEdit, onDelete }) {
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-1.5">
+      <button
+        type="button"
+        onClick={() => onMove(index, -1)}
+        disabled={index === 0}
+        className="p-2 text-[#25243A]/40 hover:bg-[#F8F7FF] rounded-xl disabled:opacity-40 transition"
+        aria-label="Move up"
+      >
+        <ArrowUp size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onMove(index, 1)}
+        disabled={index === total - 1}
+        className="p-2 text-[#25243A]/40 hover:bg-[#F8F7FF] rounded-xl disabled:opacity-40 transition"
+        aria-label="Move down"
+      >
+        <ArrowDown size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onEdit(project)}
+        className="p-2 text-[#8B5CF6] hover:bg-[#F3EDFF] rounded-xl transition"
+        aria-label="Edit"
+      >
+        <Edit2 size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onDelete(project)}
+        className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 hover:border-red-300 transition"
+        aria-label={`Delete ${project.title}`}
+      >
+        <Trash2 size={15} /> Delete
+      </button>
     </div>
   );
 }

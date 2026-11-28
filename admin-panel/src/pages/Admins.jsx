@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Plus, Shield, Trash2 } from 'lucide-react';
+import { Plus, Save, Shield, Trash2 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
+import { useDeleteGuard } from '../contexts/DeleteGuardContext';
 import Toast from '../components/Toast';
 
 export default function Admins() {
   const { user } = useAuth();
+  const confirmDelete = useDeleteGuard();
   const [emails, setEmails] = useState([]);
   const [newEmail, setNewEmail] = useState('');
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,11 @@ export default function Admins() {
       setToast({ kind: 'error', message: 'You cannot remove your own admin access.' });
       return;
     }
-    if (!window.confirm(`Remove admin access for ${email}?`)) return;
+    if (!(await confirmDelete({
+      title: 'Remove admin access',
+      description: `Remove admin access for ${email}? Enter your admin password to confirm.`,
+      confirmLabel: 'Remove',
+    }))) return;
     const { error: err } = await supabase.from('admin_users').delete().eq('email', email);
     if (err) setToast({ kind: 'error', message: err.message });
     else {
